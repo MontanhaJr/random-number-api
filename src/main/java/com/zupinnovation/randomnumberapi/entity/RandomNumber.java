@@ -1,4 +1,4 @@
-package com.zupinnovation.randomnumberapi.Entity;
+package com.zupinnovation.randomnumberapi.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
