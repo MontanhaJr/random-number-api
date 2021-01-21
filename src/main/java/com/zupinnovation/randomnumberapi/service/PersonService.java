@@ -1,6 +1,7 @@
 package com.zupinnovation.randomnumberapi.service;
 
 import com.zupinnovation.randomnumberapi.dto.request.PersonDTO;
+import com.zupinnovation.randomnumberapi.dto.response.MessageResponseDTO;
 import com.zupinnovation.randomnumberapi.entity.Person;
 import com.zupinnovation.randomnumberapi.exception.PersonNotFoundException;
 import com.zupinnovation.randomnumberapi.mapper.PersonMapper;
@@ -48,14 +49,17 @@ public class PersonService {
         personRepository.deleteById(id);
     }
 
+    public MessageResponseDTO updateById(PersonDTO personDTO) throws PersonNotFoundException {
+        verifyIfExists(personDTO.getId());
+
+        Person personToUpdate = personMapper.toModel(personDTO);
+        Person updatedPerson = personRepository.save(personToUpdate);
+
+        return MessageResponseDTO.builder().message("Person updated with ID " + updatedPerson.getId()).build();
+    }
+
     private Person verifyIfExists(Long id) throws PersonNotFoundException {
         return personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
     }
-
-//    public PersonDTO update(Long id) throws PersonNotFoundException {
-//        Person person = verifyIfExists(id);
-//        personRepository.
-//        return
-//    }
 }

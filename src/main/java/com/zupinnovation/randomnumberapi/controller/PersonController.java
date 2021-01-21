@@ -39,14 +39,14 @@ public class PersonController {
         return personService.createPerson(personDTO);
     }
 
+    @PutMapping
+    public MessageResponseDTO updateById(@RequestBody @Valid PersonDTO personDTO) throws PersonNotFoundException {
+        return personService.updateById(personDTO);
+    }
+
     @DeleteMapping("/{id}")
     public MessageResponseDTO deleteById(@PathVariable Long id) throws PersonNotFoundException {
         personService.delete(id);
         return MessageResponseDTO.builder().message("User deleted successfully.").build();
     }
-
-//    public PersonDTO updateById(@PathVariable Long id, PersonDTO personDTO) throws PersonNotFoundException {
-//        personService.update(id);
-//        return personDTO;
-//    }
 }
