@@ -5,11 +5,10 @@ import com.zupinnovation.randomnumberapi.entity.Person;
 import com.zupinnovation.randomnumberapi.mapper.PersonMapper;
 import com.zupinnovation.randomnumberapi.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
@@ -27,5 +26,12 @@ public class PersonService {
 
         Person savedPerson = personRepository.save(personToSave);
         return savedPerson;
+    }
+
+    public List<PersonDTO> listAll() {
+        List<Person> allPeople = personRepository.findAll();
+        return allPeople.stream()
+                .map(personMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
