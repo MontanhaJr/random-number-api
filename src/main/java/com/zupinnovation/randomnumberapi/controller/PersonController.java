@@ -2,6 +2,7 @@ package com.zupinnovation.randomnumberapi.controller;
 
 import com.zupinnovation.randomnumberapi.dto.request.PersonDTO;
 import com.zupinnovation.randomnumberapi.entity.Person;
+import com.zupinnovation.randomnumberapi.exception.PersonNotFoundException;
 import com.zupinnovation.randomnumberapi.repository.PersonRepository;
 import com.zupinnovation.randomnumberapi.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ public class PersonController {
     @GetMapping
     public List<PersonDTO> listAll() {
         return personService.listAll();
+    }
+    @GetMapping("/{id}")
+    public PersonDTO findById(@PathVariable Long id) throws PersonNotFoundException {
+        return personService.findById(id);
     }
 
     @PostMapping
