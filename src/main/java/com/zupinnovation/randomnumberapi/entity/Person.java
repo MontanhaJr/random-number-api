@@ -19,12 +19,10 @@ public class Person {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
-
     @Column(nullable = false, unique = true)
     private String email;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<RandomNumber> numbers;
+    private List<Numbers> numbers;
 
 }

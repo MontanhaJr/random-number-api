@@ -15,11 +15,11 @@ import javax.persistence.Id;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RandomNumber {
+public class Numbers {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer number;
+    private String numbers;
 }

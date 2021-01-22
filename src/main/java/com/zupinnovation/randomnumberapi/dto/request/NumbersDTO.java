@@ -11,10 +11,10 @@ import javax.validation.constraints.NotEmpty;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RandomNumberDTO {
+public class NumbersDTO {
 
     private Long id;
 
     @NotEmpty
-    private Integer number;
+    private String number;
 }
