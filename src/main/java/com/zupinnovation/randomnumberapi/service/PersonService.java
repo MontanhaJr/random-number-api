@@ -1,14 +1,20 @@
 package com.zupinnovation.randomnumberapi.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.zupinnovation.randomnumberapi.dto.request.PersonDTO;
 import com.zupinnovation.randomnumberapi.dto.response.MessageResponseDTO;
+import com.zupinnovation.randomnumberapi.entity.Numbers;
 import com.zupinnovation.randomnumberapi.entity.Person;
+import com.zupinnovation.randomnumberapi.exception.EmailNotFoundException;
 import com.zupinnovation.randomnumberapi.exception.PersonNotFoundException;
 import com.zupinnovation.randomnumberapi.mapper.PersonMapper;
+import com.zupinnovation.randomnumberapi.repository.NumbersRepository;
 import com.zupinnovation.randomnumberapi.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,12 +22,14 @@ import java.util.stream.Collectors;
 @Service
 public class PersonService {
     private PersonRepository personRepository;
+    private NumbersRepository numbersRepository;
 
     private PersonMapper personMapper = PersonMapper.INSTANCE;
 
     @Autowired
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, NumbersRepository numbersRepository) {
         this.personRepository = personRepository;
+        this.numbersRepository = numbersRepository;
     }
 
     public Person createPerson(PersonDTO personDTO) {
@@ -31,35 +39,20 @@ public class PersonService {
         return savedPerson;
     }
 
-    public List<PersonDTO> listAll() {
-        List<Person> allPeople = personRepository.findAll();
-        return allPeople.stream()
-                .map(personMapper::toDTO)
-                .collect(Collectors.toList());
+    @Transactional
+    public List<Person> listAll() {
+        List<Person> people = personRepository.findAll();
+
+        return people;
     }
 
-    public PersonDTO findById(Long id) throws PersonNotFoundException {
-        Person person = verifyIfExists(id);
+    public Person findByEmail(String email) throws EmailNotFoundException {
+        Person person = personRepository.findByEmail(email);
 
-        return personMapper.toDTO(person);
-    }
-
-    public void delete(Long id) throws PersonNotFoundException {
-        verifyIfExists(id);
-        personRepository.deleteById(id);
-    }
-
-    public MessageResponseDTO updateById(PersonDTO personDTO) throws PersonNotFoundException {
-        verifyIfExists(personDTO.getId());
-
-        Person personToUpdate = personMapper.toModel(personDTO);
-        Person updatedPerson = personRepository.save(personToUpdate);
-
-        return MessageResponseDTO.builder().message("Person updated with ID " + updatedPerson.getId()).build();
-    }
-
-    private Person verifyIfExists(Long id) throws PersonNotFoundException {
-        return personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
+        if (person == null)
+        {
+            throw new EmailNotFoundException(email);
+        }
+        return person;
     }
 }

@@ -3,6 +3,7 @@ package com.zupinnovation.randomnumberapi.controller;
 import com.zupinnovation.randomnumberapi.dto.request.PersonDTO;
 import com.zupinnovation.randomnumberapi.dto.response.MessageResponseDTO;
 import com.zupinnovation.randomnumberapi.entity.Person;
+import com.zupinnovation.randomnumberapi.exception.EmailNotFoundException;
 import com.zupinnovation.randomnumberapi.exception.PersonNotFoundException;
 import com.zupinnovation.randomnumberapi.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,30 +24,25 @@ public class PersonController {
         this.personService = personService;
     }
 
-    @GetMapping
-    public List<PersonDTO> listAll() {
+    @GetMapping("/listAll")
+    public List<Person> listAll() {
         return personService.listAll();
     }
 
-    @GetMapping("/{id}")
-    public PersonDTO findById(@PathVariable Long id) throws PersonNotFoundException {
-        return personService.findById(id);
+    @GetMapping("/listByEmail")
+    public Person findByEmail(@RequestBody PersonDTO personDTO) throws EmailNotFoundException {
+        return personService.findByEmail(personDTO.getEmail());
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Person createPerson(@RequestBody @Valid PersonDTO personDTO) {
-        return personService.createPerson(personDTO);
-    }
+//    @GetMapping("/{email}")
+//    public Person findByEmailURL(@PathVariable String email) throws EmailNotFoundException {
+//        return personService.findByEmail(email);
+//    }
 
-    @PutMapping
-    public MessageResponseDTO updateById(@RequestBody @Valid PersonDTO personDTO) throws PersonNotFoundException {
-        return personService.updateById(personDTO);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public Person createPerson(@RequestBody @Valid PersonDTO personDTO) {
+//        return personService.createPerson(personDTO);
+//    }
 
-    @DeleteMapping("/{id}")
-    public MessageResponseDTO deleteById(@PathVariable Long id) throws PersonNotFoundException {
-        personService.delete(id);
-        return MessageResponseDTO.builder().message("User deleted successfully.").build();
-    }
 }
