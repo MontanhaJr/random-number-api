@@ -10,13 +10,16 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonDTO {
+public class PersonDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Long id;
 
@@ -25,7 +28,6 @@ public class PersonDTO {
     @Size(min = 5)
     private String email;
 
-    @Valid
-    private List<Numbers> numbers;
+    private List<NumbersDTO> numbers;
 
 }

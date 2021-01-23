@@ -23,64 +23,40 @@ public class NumbersService {
     private NumbersRepository numbersRepository;
     private PersonRepository personRepository;
 
+    private PersonService personService;
+
     private PersonMapper personMapper = PersonMapper.INSTANCE;
     private NumbersMapper numbersMapper = NumbersMapper.INSTANCE;
 
     @Autowired
-    public NumbersService(NumbersRepository numbersRepository, PersonRepository personRepository) {
+    public NumbersService(NumbersRepository numbersRepository, PersonRepository personRepository, PersonService personService) {
         this.numbersRepository = numbersRepository;
         this.personRepository = personRepository;
+        this.personService = personService;
     }
 
-    public Numbers drawNumber(PersonDTO personDTO) {
-        takeEmail(personDTO);
+    public MessageResponseDTO drawNumber(PersonDTO personDTO) {
+        Person person = takeEmail(personDTO);
 
-        insertNumbersDrawn(personDTO);
+        String numbers = createDrawNumbers();
 
-        Numbers numberToSave = numbersMapper.toModel(randomNumberDTO);
+        NumbersDTO numbersDTO = NumbersDTO.builder()
+                .number(numbers)
+                .person(person)
+                .build();
 
-        Numbers savedNumber = numbersRepository.save(numberToSave);
-        return savedNumber;
+        createNumber(numbersDTO, numbers);
+
+        personRepository.save(person);
+
+        return MessageResponseDTO.builder().message("The numbers drawn were: " + numbers).build();
     }
 
-    public Numbers createNumber(String numbers) {
-        NumbersDTO numberDTO = NumbersDTO.builder().number(numbers).build();
-        Numbers numbersToSave = numbersMapper.toModel(numberDTO);
-
+    public Numbers createNumber(NumbersDTO numbersDTO, String numbersDraw) {
+        Numbers numbersToSave = numbersMapper.toModel(numbersDTO);
+        numbersToSave.setNumbers(numbersDraw);
         Numbers savedNumbers = numbersRepository.save(numbersToSave);
         return savedNumbers;
-    }
-
-    public List<NumbersDTO> listAll() {
-        List<Numbers> allPeople = numbersRepository.findAll();
-        return allPeople.stream()
-                .map(numbersMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-//    public PersonDTO findById(Long id) throws PersonNotFoundException {
-//        Person person = verifyIfExists(id);
-//
-//        return personMapper.toDTO(person);
-//    }
-
-    public void delete(Long id) throws NumberNotFoundException {
-        verifyIfNumberExists(id);
-        numbersRepository.deleteById(id);
-    }
-
-//    public MessageResponseDTO updateById(PersonDTO personDTO) throws PersonNotFoundException {
-//        verifyIfExists(personDTO.getId());
-//
-//        Person personToUpdate = personMapper.toModel(personDTO);
-//        Person updatedPerson = personRepository.save(personToUpdate);
-//
-//        return MessageResponseDTO.builder().message("Person updated with ID " + updatedPerson.getId()).build();
-//    }
-
-    private Numbers verifyIfNumberExists(Long id) throws NumberNotFoundException {
-        return numbersRepository.findById(id)
-                .orElseThrow(() -> new NumberNotFoundException(id));
     }
 
     private Person takeEmail(PersonDTO personDTO){
@@ -88,18 +64,18 @@ public class NumbersService {
 
         if (newPerson == null)
         {
-            Person personToSave = personMapper.toModel(personDTO);
-            newPerson = personRepository.save(personToSave);
+            newPerson = personService.createPerson(personDTO);
         }
 
         return newPerson;
     }
 
-    public MessageResponseDTO insertNumbersDrawn(PersonDTO personDTO) {
+    private String createDrawNumbers() {
+
         String numbers = "";
         List<Integer> shuffledNumbers = new ArrayList<>();
 
-        for (int i = 0; i < 61; i++) { shuffledNumbers.add(i); }
+        for (int i = 1; i < 61; i++) { shuffledNumbers.add(i); }
 
         Collections.shuffle(shuffledNumbers);
 
@@ -107,12 +83,6 @@ public class NumbersService {
             numbers = (i != 5) ? numbers + shuffledNumbers.get(i)+"-" : numbers + shuffledNumbers.get(i);
         }
 
-        Numbers numbersCreated = createNumber(numbers);
-
-        personDTO.setNumbers(numbersCreated);
-        Person personToUpdate = personMapper.toModel(personDTO);
-        Person updatedPerson = personRepository.save(personToUpdate);
-
-        return MessageResponseDTO.builder().message("Person updated with ID " + updatedPerson.getId()).build();
+        return numbers;
     }
 }
