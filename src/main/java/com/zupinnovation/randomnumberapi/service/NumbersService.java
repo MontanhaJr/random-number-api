@@ -5,7 +5,6 @@ import com.zupinnovation.randomnumberapi.dto.request.NumbersDTO;
 import com.zupinnovation.randomnumberapi.dto.response.MessageResponseDTO;
 import com.zupinnovation.randomnumberapi.entity.Numbers;
 import com.zupinnovation.randomnumberapi.entity.Person;
-import com.zupinnovation.randomnumberapi.exception.NumberNotFoundException;
 import com.zupinnovation.randomnumberapi.mapper.PersonMapper;
 import com.zupinnovation.randomnumberapi.mapper.NumbersMapper;
 import com.zupinnovation.randomnumberapi.repository.PersonRepository;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class NumbersService {
@@ -52,13 +50,6 @@ public class NumbersService {
         return MessageResponseDTO.builder().message("The numbers drawn were: " + numbers).build();
     }
 
-    public Numbers createNumber(NumbersDTO numbersDTO, String numbersDraw) {
-        Numbers numbersToSave = numbersMapper.toModel(numbersDTO);
-        numbersToSave.setNumbers(numbersDraw);
-        Numbers savedNumbers = numbersRepository.save(numbersToSave);
-        return savedNumbers;
-    }
-
     private Person takeEmail(PersonDTO personDTO){
         Person newPerson = personRepository.findByEmail(personDTO.getEmail());
 
@@ -84,5 +75,12 @@ public class NumbersService {
         }
 
         return numbers;
+    }
+
+    private Numbers createNumber(NumbersDTO numbersDTO, String numbersDraw) {
+        Numbers numbersToSave = numbersMapper.toModel(numbersDTO);
+        numbersToSave.setNumbers(numbersDraw);
+        Numbers savedNumbers = numbersRepository.save(numbersToSave);
+        return savedNumbers;
     }
 }

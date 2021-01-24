@@ -7,17 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
-
 
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Numbers implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class Numbers {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
