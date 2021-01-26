@@ -19,5 +19,6 @@ public class NumbersDTO {
     @NotEmpty
     private String number;
 
+    @NotEmpty
     private Person person;
 }
